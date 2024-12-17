@@ -1,17 +1,12 @@
 package org.javaacademy.store_manage.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.jayway.jsonpath.JsonPath;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-import okhttp3.ResponseBody;
 import org.javaacademy.store_manage.dto.ShopInfoDto;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -30,8 +25,7 @@ public class ShopService {
     private final OkHttpClient client = new OkHttpClient();
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    @SneakyThrows
-    public List<String> getShopInfo() {
+    public List<String> getShopInfo() throws IOException {
         List<String> responseStatusList = new ArrayList<>();
         for (String api : List.of(firstUrl, secondUrl)) {
             Request request = buildRequest(api);
@@ -40,7 +34,7 @@ public class ShopService {
                 if (!response.isSuccessful() || response.body() == null) {
                     throw new RuntimeException(INVALID_RESPONSE_ERROR);
                 }
-                responseStatusList.add(extractShopInfoResponse(response));
+                responseStatusList.add(extractAndConvertShopInfo(response));
             }
         }
 
@@ -54,7 +48,7 @@ public class ShopService {
                 .build();
     }
 
-    public String extractShopInfoResponse(Response response) throws IOException {
+    private String extractAndConvertShopInfo(Response response) throws IOException {
         String responseBody = response.body().string();
         String name = JsonPath.parse(responseBody).read("$.name", String.class);
         String shopStatus = JsonPath.parse(responseBody).read("$.shopStatus", String.class);
