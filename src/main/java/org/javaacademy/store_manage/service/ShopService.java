@@ -50,12 +50,8 @@ public class ShopService {
                 .build();
     }
 
-    private ShopInfoDto extractShopInfo(String responseBody) {
-        String name = JsonPath.parse(responseBody).read("$.name", String.class);
-        String shopStatus = JsonPath.parse(responseBody).read("$.shopStatus", String.class);
-        String timeOpen = JsonPath.parse(responseBody).read("$.time_open", String.class);
-        String timeClose = JsonPath.parse(responseBody).read("$.time_close", String.class);
-        return new ShopInfoDto(name, shopStatus, timeOpen, timeClose);
+    private ShopInfoDto extractShopInfo(String responseBody) throws JsonProcessingException {
+        return objectMapper.readValue(responseBody, ShopInfoDto.class);
     }
 
     private String convertToJson(ShopInfoDto shopInfoDto) throws JsonProcessingException {
