@@ -1,0 +1,12 @@
+server:
+  port: 8080
+
+shop:
+  first:
+    api: http://localhost:8081/application/status
+  second:
+    api: http://localhost:8082/application/status
+  first-good:
+    api: http://localhost:8081/shop/good
+  second-good:
+    api: http://localhost:8082/shop/good
