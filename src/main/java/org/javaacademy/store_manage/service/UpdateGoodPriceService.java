@@ -1,6 +1,8 @@
 package org.javaacademy.store_manage.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.Cleanup;
 import lombok.SneakyThrows;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -9,6 +11,7 @@ import org.javaacademy.store_manage.dto.GoodUpdatePriceDto;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.List;
 
 @Service
@@ -20,8 +23,7 @@ public class UpdateGoodPriceService {
     private final OkHttpClient client = new OkHttpClient();
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    @SneakyThrows
-    public void updateProductPrice(GoodUpdatePriceDto updatePriceDto) {
+    public void updateProductPrice(GoodUpdatePriceDto updatePriceDto) throws IOException {
         for (String api : List.of(firstGood, secondGood)) {
             RequestBody requestBody = RequestBody.create(
                     objectMapper.writeValueAsBytes(updatePriceDto)
