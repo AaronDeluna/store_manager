@@ -2,6 +2,7 @@ package org.javaacademy.store_manage.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.Cleanup;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
@@ -28,15 +29,14 @@ public class ShopService {
         List<ShopInfoDto> responseStatusList = new ArrayList<>();
         for (String url : shopConfiguration.getStatus()) {
             Request request = buildRequest(url);
-
-            try (Response response = client.newCall(request).execute()) {
-                if (!response.isSuccessful() || response.body() == null) {
-                    throw new RuntimeException(INVALID_RESPONSE_ERROR);
-                }
-                String responseBody = response.body().string();
-                ShopInfoDto shopInfoDto = extractShopInfo(responseBody);
-                responseStatusList.add(shopInfoDto);
+            @Cleanup
+            Response response = client.newCall(request).execute();
+            if (!response.isSuccessful() || response.body() == null) {
+                throw new RuntimeException(INVALID_RESPONSE_ERROR);
             }
+            String responseBody = response.body().string();
+            ShopInfoDto shopInfoDto = extractShopInfo(responseBody);
+            responseStatusList.add(shopInfoDto);
         }
 
         return responseStatusList;
