@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/application")
@@ -29,10 +30,11 @@ public class ShopController {
             @Content(mediaType = "application/json",
                     array = @ArraySchema(schema = @Schema(implementation = ShopInfoDto.class)))
     })
-    public ResponseEntity<?> grtShopInfo() throws IOException {
-        if (shopService.getShopInfo().isEmpty()) {
+    public ResponseEntity<?> getShopInfo() throws IOException {
+        List<ShopInfoDto> data = shopService.getShopInfo();
+        if (data.isEmpty()) {
             return ResponseEntity.ok("Нет данных о магазинах");
         }
-        return ResponseEntity.ok(shopService.getShopInfo());
+        return ResponseEntity.ok(data);
     }
 }

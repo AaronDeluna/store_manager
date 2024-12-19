@@ -2,13 +2,13 @@ package org.javaacademy.store_manage.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jayway.jsonpath.JsonPath;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import org.javaacademy.store_manage.config.ShopConfiguration;
 import org.javaacademy.store_manage.dto.ShopInfoDto;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -16,18 +16,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
+@Slf4j
 public class ShopService {
     private static final String INVALID_RESPONSE_ERROR = "Ошибка: Запрос не выполнен успешно или тело ответа пустое.";
-    @Value("${shop.first.api}")
-    private String firstUrl;
-    @Value("${shop.second.api}")
-    private String secondUrl;
     private final OkHttpClient client = new OkHttpClient();
     private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ShopConfiguration shopConfiguration;
 
-    public List<String> getShopInfo() throws IOException {
-        List<String> responseStatusList = new ArrayList<>();
-        for (String url : List.of(firstUrl, secondUrl)) {
+    public List<ShopInfoDto> getShopInfo() throws IOException {
+        List<ShopInfoDto> responseStatusList = new ArrayList<>();
+        for (String url : shopConfiguration.getStatus()) {
             Request request = buildRequest(url);
 
             try (Response response = client.newCall(request).execute()) {
@@ -36,7 +35,7 @@ public class ShopService {
                 }
                 String responseBody = response.body().string();
                 ShopInfoDto shopInfoDto = extractShopInfo(responseBody);
-                responseStatusList.add(convertToJson(shopInfoDto));
+                responseStatusList.add(shopInfoDto);
             }
         }
 
@@ -52,9 +51,5 @@ public class ShopService {
 
     private ShopInfoDto extractShopInfo(String responseBody) throws JsonProcessingException {
         return objectMapper.readValue(responseBody, ShopInfoDto.class);
-    }
-
-    private String convertToJson(ShopInfoDto shopInfoDto) throws JsonProcessingException {
-        return objectMapper.writeValueAsString(shopInfoDto);
     }
 }

@@ -1,30 +1,25 @@
 package org.javaacademy.store_manage.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.Cleanup;
-import lombok.SneakyThrows;
+import lombok.RequiredArgsConstructor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
+import org.javaacademy.store_manage.config.ShopConfiguration;
 import org.javaacademy.store_manage.dto.GoodUpdatePriceDto;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class UpdateGoodPriceService {
-    @Value("${shop.first-good.api}")
-    private String firstGood;
-    @Value("${shop.second-good.api}")
-    private String secondGood;
     private final OkHttpClient client = new OkHttpClient();
     private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ShopConfiguration shopConfiguration;
 
     public void updateProductPrice(GoodUpdatePriceDto updatePriceDto) throws IOException {
-        for (String api : List.of(firstGood, secondGood)) {
+        for (String api : shopConfiguration.getGood()) {
             RequestBody requestBody = RequestBody.create(
                     objectMapper.writeValueAsBytes(updatePriceDto)
             );
