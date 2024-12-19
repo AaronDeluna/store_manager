@@ -22,11 +22,11 @@ public class ShopService {
     private String firstUrl;
     @Value("${shop.second.api}")
     private String secondUrl;
-    private final List<String> responseStatusList = new ArrayList<>();
     private final OkHttpClient client = new OkHttpClient();
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     public List<String> getShopInfo() throws IOException {
+        List<String> responseStatusList = new ArrayList<>();
         for (String url : List.of(firstUrl, secondUrl)) {
             Request request = buildRequest(url);
 
